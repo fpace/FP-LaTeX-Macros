@@ -1,0 +1,43 @@
+# Core LaTeX auxiliary files
+*.aux
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.idx
+*.ila
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.maf
+*.mtc
+*.mtc0
+*.nav
+*.nlo
+*.out
+*.pdfsync
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.bbl
+*.blg
+
+# Bibliography temporary files (BibTeX / Biber)
+*-blx.bib
+*.run.xml
+*.bcf
+
+# PDF output
+# (Remove the line below if you WANT to track your compiled PDF)
+# *.pdf
+
+# Operating system / IDE specific files
+.DS_Store
+.vscode/
+.idea/
+*.swp
