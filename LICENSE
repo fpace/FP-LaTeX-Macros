@@ -1,5 +1,4 @@
-
-FP LaTeX macros
+fp-macros
 Copyright 2026 Francesco Pace
 
 This work may be distributed and/or modified under the conditions of the
@@ -17,6 +16,5 @@ This work has the LPPL maintenance status `maintained`.
 
 The Current Maintainer of this work is Francesco Pace.
 
-This work consists of all files distributed in the FP LaTeX Macros
-repository, except for files that explicitly state different licensing
-terms.
+This work consists of all files distributed in the fp-macros repository,
+except for files that explicitly state different licensing terms.

@@ -1,0 +1,27 @@
+fp-macros.sty
+│
+├── fp-base.sty
+│   ├── global metadata
+│   ├── options journal / nojournal
+│   ├── shared state
+│   ├── messages
+│   ├── banner
+│   └── amsmath + amssymb
+│
+├── fp-math.sty
+│   ├── fp-base
+│   ├── bm
+│   └── mathtools          [only nojournal]
+│
+├── fp-tensors.sty
+│   ├── fp-math
+│   └── tensor             [only nojournal]
+│
+├── fp-cosmology.sty
+│   └── fp-tensors
+│
+├── fp-units.sty
+│   └── siunitx            [only nojournal]
+│
+└── fp-text.sty
+    └── no additional dependence

@@ -1,0 +1,54 @@
+\NeedsTeXFormat{LaTex2e}[2020-02-02]
+
+% Forward options such as journal/nojournal to the shared core.
+\RequirePackageWithOptions{fp-base}
+
+\ExplSyntaxOn
+
+% ======================================================================================
+% Module metadata
+% ======================================================================================
+
+\tl_const:Nn \c_fp_math_name_tl { fp-math }
+\tl_const:Nn \c_fp_math_description_tl { General~mathematical~notation~for~fp-macros }
+
+\use:x
+    {
+      \exp_not:N \ProvidesExplPackage
+          { \c_fp_math_name_tl }
+          { \c_fp_macros_date_tl }
+          { \c_fp_macros_version_tl }
+          { \c_fp_math_description_tl }
+    }
+
+% ==============================================================================
+% Dependencies
+% ==============================================================================
+
+\fp_macros_internal_begin:
+
+\RequirePackage{bm}
+
+\bool_if:NF \g_fp_macros_journal_mode_bool
+     {
+       \RequirePackage{mathtools}
+
+       \mathtoolsset{
+         showonlyrefs = true,
+         mathcoloneq  = true
+         }
+     }
+
+\fp_macros_internal_end:
+
+% ==============================================================================
+% Command definitions
+% ==============================================================================
+
+%Add general mathematical notation here.
+
+\fp_macros_module_banner:n {\c_fp_math_name_tl }
+
+\ExplSyntaxOff
+
+\endinput

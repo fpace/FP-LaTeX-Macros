@@ -1,77 +1,99 @@
-# FP LaTeX Macros
+# fp-macros
 
-A modular collection of reusable LaTeX commands and definitions for mathematical physics, differential geometry, tensor calculus, and cosmology.
+A modular collection of reusable LaTeX commands and definitions for mathematical physics, differential geometry, tensor calculus, cosmology, units, and scientific text.
 
 The goal of this repository is to provide a consistent personal LaTeX toolkit that can be reused across scientific papers, notes, lecture material, and technical documents.
 
 Rather than maintaining the same definitions independently in different projects, commonly used commands are collected here and organized into small thematic packages.
 
-See [CHANGELOG.md](CHANGELOG.md) for notable changes and [LICENSE](LICENSE) for the project's licensing notice.
+See [CHANGELOG.md](CHANGELOG.md) for notable changes and [LICENSE](LICENSE) for licensing information.
 
 ## Repository structure
 
-The intended package layout is described below. `README.md`, `LICENSE`, and `CHANGELOG.md` belong in the repository root, alongside the package files.
+The package is organized as follows:
 
 | File | Purpose |
 | --- | --- |
 | `README.md` | Project overview, installation, usage, and development guidelines. |
-| [LICENSE](LICENSE) | Licensing notice and maintenance information. |
-| [CHANGELOG.md](CHANGELOG.md) | Notable changes and release history. |
-| `fp.sty` | Main package and entry point. |
-| `fp-base.sty` | Core dependencies and shared definitions. |
+| `LICENSE` | Licensing notice and maintenance information. |
+| `AUTHORS` | List of maintainers and contributing people. |
+| `CHANGELOG.md` | Notable changes and release history. |
+| `fp-macros.sty` | Main package and aggregate entry point. |
+| `fp-base.sty` | Core dependencies, project metadata, shared state, options, messages, and internal helpers. |
 | `fp-math.sty` | General mathematical notation. |
 | `fp-tensors.sty` | Tensor calculus and differential geometry. |
 | `fp-cosmology.sty` | Cosmology and cosmological perturbation theory. |
 | `fp-units.sty` | Units and physical constants. |
 | `fp-text.sty` | Textual and scientific abbreviations. |
 
-### `fp.sty`
+The dependency hierarchy is intentionally one-directional:
 
-Main package and recommended entry point.
-
-It loads the individual modules required by the complete toolkit, allowing the entire collection to be enabled with
-
-```latex
-\usepackage{fp}
+```text
+fp-macros
+├── fp-base
+├── fp-math
+│   └── fp-base
+├── fp-tensors
+│   └── fp-math
+│       └── fp-base
+├── fp-cosmology
+│   └── fp-tensors
+│       └── fp-math
+│           └── fp-base
+├── fp-units
+│   └── fp-base
+└── fp-text
+    └── fp-base
 ```
 
-Individual modules may also be loaded separately when only a subset of the functionality is required.
+Lower-level modules must not depend on more specialized modules.
+
+## Package roles
+
+### `fp-macros.sty`
+
+`fp-macros.sty` is the main aggregate entry point.
+
+Loading
+
+```latex
+\usepackage{fp-macros}
+```
+
+enables the complete toolkit.
+
+It forwards package options to `fp-base`, loads all component modules, and emits a single package banner. Internal module banners are suppressed while the aggregate package is being loaded.
 
 ### `fp-base.sty`
 
-Core dependencies and low-level definitions shared by the other modules.
+`fp-base.sty` is the shared core of the project.
 
-Typical contents include:
+It owns:
 
-- common mathematical packages;
-- basic symbols;
-- general-purpose utility commands;
-- definitions required by several other modules.
+- project-wide metadata;
+- the `journal` / `nojournal` option state;
+- common messages and error handling;
+- internal loading-state helpers;
+- banner helpers;
+- core mathematical dependencies;
+- shared low-level definitions used by more than one module.
 
-This package should remain as lightweight and general as possible.
+The project version, date, package name, and description are managed centrally in this file.
+
+The core should remain lightweight and general.
 
 ### `fp-math.sty`
 
-General mathematical notation that is not specific to physics or cosmology.
+General mathematical notation that is not specific to tensor calculus, physics, or cosmology.
 
-Typical contents include:
+Typical contents may include:
 
 - mathematical operators;
 - ordinary and partial derivatives;
 - vectors and matrices;
 - delimiters;
-- common functions;
+- common mathematical functions;
 - general mathematical shorthand.
-
-Examples may include commands for
-
-```latex
-\Tr
-\diag
-\rank
-\pd{f}{x}
-\od{f}{x}
-```
 
 The purpose of this module is to collect notation that could also be useful in a purely mathematical document.
 
@@ -79,7 +101,7 @@ The purpose of this module is to collect notation that could also be useful in a
 
 Commands related to tensor calculus and differential geometry.
 
-Typical contents include:
+Typical contents may include:
 
 - metric tensors;
 - covariant derivatives;
@@ -92,17 +114,17 @@ Typical contents include:
 - symmetrization and antisymmetrization;
 - geometrical shorthand.
 
-This module is intended to keep tensor and differential-geometric notation consistent across different projects.
+This module depends on `fp-math`.
 
 ### `fp-cosmology.sty`
 
 Notation specific to cosmology and cosmological perturbation theory.
 
-Typical contents include:
+Typical contents may include:
 
 - cosmological density parameters;
-- the Hubble parameter;
-- scale factor notation;
+- Hubble quantities;
+- scale-factor notation;
 - cosmological parameters;
 - growth functions;
 - density contrasts;
@@ -110,91 +132,66 @@ Typical contents include:
 - gravitational potentials;
 - background and perturbation quantities.
 
-For example, recurring quantities such as
-
-```latex
-\Omega_{\mathrm m}
-\Omega_{\mathrm b}
-\sigma_8
-n_{\mathrm s}
-\Lambda\mathrm{CDM}
-```
-
-can be represented by consistent semantic commands.
-
-If the collection grows substantially, specialized material such as cosmological perturbation theory may eventually be moved into an additional module.
+This module depends on `fp-tensors`.
 
 ### `fp-units.sty`
 
 Units and physical constants.
 
-This module is intended to work primarily with `siunitx` and may contain:
+Typical contents may include:
 
-- custom astronomical units;
+- astronomical units;
 - cosmological units;
 - physical constants;
-- unit formatting conventions.
+- unit-formatting conventions.
 
-Whenever possible, units should be defined through `siunitx` rather than through manually formatted LaTeX commands.
+In normal mode this module may use `siunitx`. In journal mode it must remain usable without requiring `siunitx`.
 
 ### `fp-text.sty`
 
 Frequently used textual and scientific abbreviations.
 
-Typical examples include:
+Typical contents may include:
 
 - names of experiments and missions;
 - cosmological model names;
 - recurring scientific terminology;
 - common textual abbreviations.
 
-For example,
-
-```latex
-\LCDM
-\wCDM
-```
-
-may be used to ensure that model names are always typeset consistently.
+This module has no additional external dependencies beyond `fp-base`.
 
 ## Installation
 
 ### Local installation
 
-Place the required `.sty` files in the same directory as the LaTeX document. When using the complete toolkit, include `fp.sty` and all the modules it loads.
+Place the required `.sty` files in the same directory as the LaTeX document.
 
-Then load the main package with
+For the complete toolkit, copy all package files and load
 
 ```latex
-\usepackage{fp}
+\usepackage{fp-macros}
 ```
 
 ### Personal TeX tree
 
-For use across many projects, the package can instead be installed in a personal TeX tree. A possible location is
+For use across multiple projects, the package can be installed in a personal TeX tree, for example:
 
 ```text
-~/texmf/tex/latex/fp/
+~/texmf/tex/latex/fp-macros/
 ```
 
-with the package files stored inside that directory. The appropriate location depends on the TeX distribution and its configuration.
-
-After installation, the package can be used from any document with
-
-```latex
-\usepackage{fp}
-```
-
-Depending on the TeX distribution, it may be necessary to refresh the filename database.
+Place the package files in that directory. Depending on the TeX distribution, it may be necessary to refresh the filename database.
 
 ## Usage
 
-The complete collection can be loaded with
+### Complete toolkit
+
+The default mode is `nojournal`:
 
 ```latex
 \documentclass{article}
 
-\usepackage{fp}
+\usepackage{fp-macros}
 
 \begin{document}
 
@@ -203,15 +200,140 @@ The complete collection can be loaded with
 \end{document}
 ```
 
-Alternatively, individual modules can be loaded separately:
+This is equivalent to
+
+```latex
+\usepackage[nojournal]{fp-macros}
+```
+
+or
+
+```latex
+\usepackage[journal=false]{fp-macros}
+```
+
+### Journal-compatible mode
+
+For documents intended for journal submission, use
+
+```latex
+\usepackage[journal]{fp-macros}
+```
+
+or equivalently
+
+```latex
+\usepackage[journal=true]{fp-macros}
+```
+
+Journal mode minimizes optional external dependencies and avoids relying on packages that may conflict with journal classes or submission environments.
+
+The purpose of `journal` is compatibility, not journal-specific typography. Formatting specific to MNRAS, JCAP, A&A, Physical Review, or other journals should remain outside this package.
+
+### Loading individual modules
+
+Individual modules may be loaded directly when only a subset of the toolkit is needed:
 
 ```latex
 \usepackage{fp-math}
+```
+
+```latex
 \usepackage{fp-tensors}
+```
+
+```latex
 \usepackage{fp-cosmology}
 ```
 
-This can be useful when only a restricted subset of the definitions is needed.
+```latex
+\usepackage{fp-units}
+```
+
+```latex
+\usepackage{fp-text}
+```
+
+The global options can also be passed when a module is loaded directly:
+
+```latex
+\usepackage[journal]{fp-cosmology}
+```
+
+Options are forwarded to `fp-base`, which owns the shared package state.
+
+Dependencies are loaded automatically. For example, loading `fp-cosmology` also loads `fp-tensors`, `fp-math`, and `fp-base`.
+
+## Loading banners
+
+The package uses a shared banner mechanism defined in `fp-base`.
+
+When the aggregate package is loaded,
+
+```latex
+\usepackage{fp-macros}
+```
+
+only the `fp-macros` banner is emitted. Banners from modules loaded internally are suppressed.
+
+When a module is loaded directly, for example
+
+```latex
+\usepackage{fp-cosmology}
+```
+
+only the public banner for `fp-cosmology` is emitted; banners from its internal dependencies are suppressed.
+
+This keeps the LaTeX log informative without producing unnecessary noise.
+
+## Package options
+
+The currently supported global options are:
+
+| Option | Meaning |
+| --- | --- |
+| `journal` | Enable journal-compatible mode. |
+| `journal=true` | Equivalent to `journal`. |
+| `journal=false` | Disable journal-compatible mode. |
+| `nojournal` | Disable journal-compatible mode; this is the default behavior. |
+
+Unknown options generate an explicit package error.
+
+## Dependencies
+
+Dependencies are intentionally split between the shared core and the modules that require them.
+
+| Component | `journal` | `nojournal` |
+| --- | --- | --- |
+| `fp-base` | `l3keys2e`, `amsmath`, `amssymb` | `l3keys2e`, `amsmath`, `amssymb` |
+| `fp-math` | `bm` | `bm`, `mathtools` |
+| `fp-tensors` | no additional external package | `tensor` |
+| `fp-cosmology` | no additional external package | no additional external package |
+| `fp-units` | no additional external package | `siunitx` |
+| `fp-text` | no additional external package | no additional external package |
+
+Each module should declare only the dependencies it actually needs or rely on dependencies explicitly provided by a lower-level module.
+
+Packages that primarily control document style or layout should not be loaded automatically by `fp-macros`.
+
+In particular, packages such as `geometry`, `hyperref`, `cleveref`, `caption`, `subcaption`, `titlesec`, `fontspec`, and `unicode-math` belong to the document configuration rather than to this macro collection.
+
+## Project metadata
+
+Project-wide metadata are defined centrally in `fp-base.sty`.
+
+The managed values are:
+
+```latex
+\c_fp_macros_name_tl
+\c_fp_macros_date_tl
+\c_fp_macros_version_tl
+\c_fp_macros_description_tl
+```
+
+When preparing a new release, update the corresponding constant definitions in `fp-base.sty`. The aggregate package and the individual modules reuse the same project date and version.
+
+This keeps release metadata synchronized across the complete package family.
 
 ## Design principles
 
@@ -219,31 +341,51 @@ This can be useful when only a restricted subset of the definitions is needed.
 
 Commands should describe the meaning of a quantity rather than merely reproduce its visual appearance.
 
-For example, `\Omatter` is preferable to a very short and ambiguous command such as `\Om` when the additional verbosity improves readability.
+For example, a descriptive command such as
 
-Semantic names make the LaTeX source easier to understand and reduce the probability of command-name collisions.
+```latex
+\Omatter
+```
+
+is generally preferable to a short and ambiguous command name when the additional verbosity improves readability and reduces the risk of collisions.
 
 ### General-to-specific hierarchy
 
 Definitions should be placed in the most general appropriate module.
 
-The intended hierarchy runs from `fp-base` through `fp-math` and `fp-tensors` to `fp-cosmology`. Each module should load only the dependencies it actually needs.
+The intended conceptual hierarchy is:
 
-Lower-level modules should not depend on more specialized modules. This helps avoid circular dependencies and keeps the package structure predictable.
+```text
+fp-base
+   ↓
+fp-math
+   ↓
+fp-tensors
+   ↓
+fp-cosmology
+```
+
+`fp-units` and `fp-text` are parallel specialized modules built on `fp-base`.
+
+Lower-level modules should never depend on higher-level modules.
 
 ### Minimal reimplementation
 
-Existing, well-maintained LaTeX packages should be used whenever they already provide the required functionality.
+Existing, well-maintained LaTeX packages should be used when they already provide suitable low-level functionality.
 
-The purpose of this repository is to build consistent higher-level notation on top of facilities such as `amsmath`, `mathtools`, `siunitx`, and the document command interface provided by modern LaTeX.
+The purpose of `fp-macros` is to provide consistent higher-level scientific notation rather than to reimplement established packages.
 
 ### Separation of notation and document style
 
-Scientific notation should remain independent of journal-specific formatting.
+Scientific notation should remain independent of document layout and journal-specific formatting.
 
-Commands related to equations, tensors, cosmological quantities, and units belong in this repository. Formatting specific to journals such as MNRAS, JCAP, A&A, or Physical Review should preferably be kept in separate style files.
+Commands related to mathematics, tensors, cosmological quantities, units, and recurring scientific text belong here. Page geometry, fonts, captions, references, headings, and other presentation choices generally do not.
 
-This separation makes the scientific notation portable between different publication formats.
+### Journal compatibility
+
+A command that is part of the public interface should, whenever practical, remain usable in both `journal` and `nojournal` modes.
+
+Features that require optional dependencies available only in `nojournal` mode should be designed carefully and documented explicitly.
 
 ## Adding a new command
 
@@ -251,41 +393,31 @@ Before adding a command:
 
 1. Check whether an established LaTeX package already provides the required functionality.
 2. Determine which module best matches the meaning of the command.
-3. Choose a descriptive and reasonably collision-resistant name.
-4. Avoid redefining standard LaTeX commands unless absolutely necessary.
+3. Prefer a descriptive and reasonably collision-resistant public name.
+4. Avoid redefining standard LaTeX commands unless there is a compelling reason.
 5. Keep the definition independent of journal-specific formatting whenever possible.
-6. Add a short comment when the purpose of the command is not immediately obvious.
-7. Document notable additions or changes under `Unreleased` in [CHANGELOG.md](CHANGELOG.md).
+6. Avoid making a public macro depend unnecessarily on a `nojournal`-only package.
+7. Use the `fp_...` namespace for internal `expl3` functions and variables.
+8. Add a short comment when the purpose of the command is not immediately obvious.
+9. Add tests for new public behavior.
+10. Document notable additions or changes under `Unreleased` in [CHANGELOG.md](CHANGELOG.md).
 
-For example:
-
-```latex
-% Present-day matter density parameter
-\newcommand{\Omatter}{\Omega_{\mathrm m}}
-```
-
-Commands with arguments should preferably be used when the notation naturally varies:
-
-```latex
-\newcommand{\pd}[2]{%
-  \frac{\partial #1}{\partial #2}%
-}
-```
-
-rather than defining many nearly identical fixed commands.
+Commands with arguments should generally be preferred over families of nearly identical fixed commands when the notation naturally varies.
 
 ## Naming conventions
 
-The following conventions are recommended:
+Recommended conventions are:
 
-- use descriptive command names;
-- avoid one-letter commands;
-- avoid names already used by standard LaTeX;
+- use descriptive public command names;
+- avoid one-letter command names;
+- avoid names already used by LaTeX or common packages;
 - use consistent capitalization;
 - group related definitions together;
-- prefer semantic names over purely typographical names.
+- prefer semantic names over purely typographical names;
+- use `fp_`-prefixed names for internal `expl3` control sequences;
+- use the appropriate `expl3` scope/type prefixes for internal variables, such as `\g_..._bool`, `\c_..._tl`, and `\l_...`.
 
-For example:
+Examples of intended semantic public names include:
 
 ```latex
 \RicciTensor
@@ -295,71 +427,89 @@ For example:
 \Obaryon
 ```
 
-are generally easier to maintain than a large collection of cryptic abbreviations.
-
 ## Compatibility
 
-The package is intended for modern LaTeX distributions.
-
-Dependencies should be kept explicit in the corresponding `.sty` files using, for example,
+The package requires a modern LaTeX format:
 
 ```latex
-\RequirePackage{amsmath}
-\RequirePackage{amssymb}
-\RequirePackage{mathtools}
-\RequirePackage{siunitx}
+\NeedsTeXFormat{LaTeX2e}[2023-11-01]
 ```
 
-Each module should declare only the dependencies it actually requires, or rely on dependencies explicitly provided by a lower-level module.
+The package is designed for use with pdfLaTeX, LuaLaTeX, and XeLaTeX.
+
+Compatibility with journal classes is one of the reasons for providing the `journal` option.
 
 ## Versioning
 
 This project follows Semantic Versioning using `MAJOR.MINOR.PATCH`:
 
-- **MAJOR** — incompatible changes to existing commands;
-- **MINOR** — new backward-compatible commands or modules;
-- **PATCH** — backward-compatible fixes and minor internal improvements.
+- **MAJOR** — incompatible changes to the public interface;
+- **MINOR** — new backward-compatible commands, options, or modules;
+- **PATCH** — backward-compatible fixes and internal improvements.
 
-During initial development, versions below `1.0.0` may introduce incompatible changes. Such changes should be clearly documented, including migration instructions where appropriate.
+During initial development, versions below `1.0.0` may introduce incompatible changes. Such changes should be documented clearly.
 
-Changes to command names or semantics should be treated carefully because they can affect existing scientific documents.
+Changes to public command names or semantics should be treated carefully because they can affect existing scientific documents.
 
 ## Changelog
 
-Notable changes are recorded in [CHANGELOG.md](CHANGELOG.md), using the Keep a Changelog format.
+Notable changes are recorded in [CHANGELOG.md](CHANGELOG.md), using the Keep a Changelog structure.
 
-The changelog currently starts with an `Unreleased` section. It records work that has not yet been assigned to a published release.
+Until the first public release is prepared, ongoing work remains under `Unreleased`.
 
-Entries are grouped under the following headings when applicable:
+When preparing a release:
 
-- **Added** — new features or commands;
-- **Changed** — changes to existing behavior;
-- **Deprecated** — features or commands scheduled for removal;
-- **Removed** — removed features or commands;
-- **Fixed** — bug fixes;
-- **Security** — security-related fixes.
-
-When preparing a release, move the relevant entries into a versioned section with a release date in `YYYY-MM-DD` format, and keep an `Unreleased` section for subsequent development. Add GitHub release or comparison links once the repository URL and corresponding tags are available.
+1. move the relevant entries from `Unreleased` to a versioned section;
+2. add the release date in ISO format (`YYYY-MM-DD`);
+3. create a new empty `Unreleased` section;
+4. add GitHub comparison links once the repository URL and tags are known.
 
 ## Testing
 
-Changes should ideally be checked with one or more small test documents covering the main modules.
+Changes should be checked with small test documents covering both aggregate and selective loading.
 
-A future test suite could include `tests/test-math.tex`, `tests/test-tensors.tex`, `tests/test-cosmology.tex`, `tests/test-units.tex`, and `tests/test-all.tex`.
+A useful test layout is:
 
-The complete test document should load
-
-```latex
-\usepackage{fp}
+```text
+tests/
+├── test-all.tex
+├── test-math.tex
+├── test-tensors.tex
+├── test-cosmology.tex
+├── test-units.tex
+├── test-text.tex
+├── test-journal.tex
+└── test-options.tex
 ```
 
-and exercise representative commands from every module.
+Tests should cover at least:
+
+- `\usepackage{fp-macros}`;
+- `\usepackage[journal]{fp-macros}`;
+- direct loading of each module;
+- transitive dependency loading;
+- `journal` and `nojournal` behavior;
+- suppression of internal dependency banners;
+- handling of unknown package options;
+- representative public commands as they are added.
+
+Where practical, tests should be run with pdfLaTeX, LuaLaTeX, and XeLaTeX.
 
 ## Documentation
 
 As the collection grows, command documentation may be maintained separately from the implementation.
 
-Possible future documentation files include `docs/commands.md`, `docs/math.md`, `docs/tensors.md`, `docs/cosmology.md`, and `docs/units.md`.
+Possible future documentation files include:
+
+```text
+docs/
+├── commands.md
+├── math.md
+├── tensors.md
+├── cosmology.md
+├── units.md
+└── text.md
+```
 
 A generated command reference may eventually be preferable if the number of definitions becomes large.
 
@@ -367,9 +517,23 @@ A generated command reference may eventually be preferable if the number of defi
 
 This repository is under active development.
 
-Commands, naming conventions, and module organization may evolve while the package is being consolidated. Backward compatibility will become a stronger requirement once a stable `1.0.0` release is reached.
+The package architecture is being consolidated before the public command set is expanded. Commands and naming conventions may therefore evolve before the first stable `1.0.0` release.
 
 See [CHANGELOG.md](CHANGELOG.md) for the documented development history.
+
+
+## Minimum requirements
+
+`fp-macros` requires:
+
+- LaTeX kernel 2020-02-02 or newer;
+- a compatible LaTeX3 programming layer;
+- `l3keys2e` when used with LaTeX kernels older than 2022-06-01.
+
+The package has been tested with:
+
+- LaTeX kernel 2021-11-15;
+- expl3 2022-01-21.
 
 ## License
 
@@ -379,7 +543,7 @@ This work may be distributed and/or modified under the conditions of the **LaTeX
 
 The work has the LPPL maintenance status **maintained**. The **Current Maintainer** is **Francesco Pace**.
 
-See [LICENSE](LICENSE) for the project's licensing notice and scope. The license text is available from the [LaTeX Project](https://www.latex-project.org/lppl.txt).
+See [LICENSE](LICENSE) for the licensing notice and scope.
 
 ## Author
 

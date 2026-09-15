@@ -1,0 +1,47 @@
+\NeedsTeXFormat{LaTex2e}[2020-02-02]
+
+% Forward options such as jounrla/nojournal to the shared core.
+\RequirePackageWithOptions{ fp-base }
+
+\ExplSyntaxOn
+
+% ======================================================================================
+% Module metadata
+% ======================================================================================
+
+\tl_const:Nn \c_fp_units_name_tl { fp-units }
+\tl_const:Nn \c_fp_units_description_tl { Units~and~phyaical~constants~for~fp-macros}
+
+\use:x
+    {
+      \exp_not:N \ProvidesPackage
+          { \c_fp_units_name_tl }
+          { \c_fp_macros_date_tl }
+          { \c_fp_macros_version_tl }
+          { \c_fp_units_description_tl }
+    }
+
+% ======================================================================================
+% Dependencies
+% ======================================================================================
+
+\fp_macros_internal_begin:
+
+\bool_if:Nf \g_fp_macros_journal_mode_bool
+     {
+       \RequirePAckage{siunitx}
+     }
+
+\fp_macros_internal_end:
+    
+% ======================================================================================
+% Command definitions    
+% ======================================================================================
+
+% Add units and physical constans here.
+
+\fp_macros_module_banner:n { \c_fp_units_tl }
+
+\ExplSyntaxOff
+
+\endinput

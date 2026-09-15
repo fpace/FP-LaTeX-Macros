@@ -1,0 +1,39 @@
+\NeedsTeXFormat{LaTeX2e}[2020-02-02]
+
+% fp-base owns the shared metadata, options, state, messages, and core dependencies.
+% Options passed to fp-macros are forwarder to fp-base.
+\RequirePackageWithOptions{fp-base}
+
+\ExplSyntaxOn
+
+% Use the project metadata defined in fp-base, so date/version/name are managed in one
+% place only.
+\use:x
+    {
+      \exp_not:N \ProvidesExplPackage
+          { \c_fp_macros_name_tl }
+          { \c_fp_macros_date_tl }
+          { \c_fp_macros_version_tl }
+          { \c_fp_macros_description_tl }
+    }
+    
+% ======================================================================================
+% Load component modules
+% ======================================================================================
+
+\fp_nacros_internal_begin:
+
+\RequirePackage{fp-math}
+\RequirePackage{fp-tensors}
+\RequirePackage{fp-cosmology}
+\RequirePackage{fp-units}
+\RequirePackage{fp-text}
+
+\fp_macros_internal_end:
+
+% Print one banner for the aggregate package.
+\fp_macros_package_banner:
+
+\ExplSyntaxOff
+
+\endinput
